@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaMonitor - Dashboard Responsivo</title>
+    
+    <style>
+        /* Variáveis e Estilos Base */
+        :root {
+            --dark-bg: #1e1e2f;
+            --card-bg: #27293d;
+            --text-light: #ffffff;
+            --text-secondary: #9a9a9a;
+            --color-ph: #4b89f5;
+            --color-temp: #f75d81;
+            --color-turb: #f5b041;
+            --color-do: #58d68d;
+            --color-alert-crit: #e74c3c;
+            --color-alert-info: #3498db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Cabeçalho */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--color-ph);
+        }
+        .header span {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        /* Cards de Métrica (Layout Responsivo) */
+        .sensor-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .metric-card {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .metric-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .metric-value {
+            font-size: 24px; /* Ajuste para responsividade */
+            font-weight: bold;
+            margin: 0;
+        }
+        .metric-footer {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .change-indicator {
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .change-pos { background-color: var(--color-do); color: var(--dark-bg); }
+        .change-neg { background-color: var(--color-alert-crit); color: white; }
+
+        /* Cores dos Valores Específicos */
+        .ph .metric-value { color: var(--color-ph); }
+        .temp .metric-value { color: var(--color-temp); }
+        .turb .metric-value { color: var(--color-turb); }
+        .do .metric-value { color: var(--color-do); }
+        .cond .metric-value { color: #76d7c4; }
+
+        /* Estrutura Principal (Gráficos e Lateral) */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr; /* Padrão Mobile: 1 coluna */
+            gap: 20px;
+        }
+
+        /* Container de Placeholder/Gráfico */
+        .chart-placeholder, .map-placeholder {
+            background-color: var(--card-bg);
+            min-height: 150px;
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-style: italic;
+        }
+        .chart-placeholder h3, .map-placeholder h3 {
+            font-size: 1.1em;
+            margin: 0;
+        }
+        .chart-placeholder small {
+            margin-top: 5px;
+        }
+
+        /* Painel Lateral (Alertas e Leituras) */
+        .alerts, .readings {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .alerts h3, .readings h3 {
+            margin-top: 0;
+            font-size: 18px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .alerts .new-alerts { color: var(--color-alert-crit); font-size: 0.9em; float: right; }
+
+        /* Estilo dos Alertas */
+        .alert-item {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 5px solid;
+        }
+        .alert-critical { 
+            background-color: rgba(231, 76, 60, 0.15);
+            border-color: var(--color-alert-crit); 
+        }
+        .alert-info { 
+            background-color: rgba(52, 152, 219, 0.15);
+            border-color: var(--color-alert-info); 
+        }
+        .alert-item p { margin: 0; font-size: 14px; }
+        .alert-item small { color: var(--text-secondary); display: block; margin-top: 4px; font-size: 0.8em;}
+
+        /* Leituras Recentes */
+        .reading-item {
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #333;
+            font-size: 0.9em;
+        }
+        .reading-item h4 {
+            margin: 0 0 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1em;
+        }
+        .status-tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .status-normal { background-color: var(--color-do); color: var(--dark-bg); }
+        .status-atencao { background-color: var(--color-turb); color: var(--dark-bg); }
+        .reading-details {
+            color: var(--text-secondary);
+        }
+
+        /* Media Query para Desktop */
+        @media (min-width: 992px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr; /* Desktop: 2/3 para gráficos, 1/3 para lateral */
+            }
+            .sensor-metrics {
+                grid-template-columns: repeat(6, 1fr); /* 6 cards em linha no Desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h2>AquaMonitor - Dashboard</h2>
+            <span>Monitoramento em tempo real - Prefeitura</span>
+        </div>
+        <div>
+            <span id="current-time"></span> | <span style="color: var(--color-do);">Online</span>
+        </div>
+    </div>
+
+    <div class="sensor-metrics">
+        <div class="metric-card">
+            <h4>Sensores Ativos</h4>
+            <p class="metric-value">24</p>
+            <div class="metric-footer">
+                <span class="change-indicator change-pos">+2</span>
+                Dispositivos online
+            </div>
+        </div>
+
+        <div class="metric-card ph">
+            <h4>pH Médio</h4>
+            <p class="metric-value">7.2</p>
+            <div class="metric-footer">
+                <span class="change-indicator change-neg">-0.1</span>
+                Última hora
+            </div>
+        </div>
+
+        <div class="metric-card temp">
+            <h4>Temperatura</h4>
+            <p class="metric-value">23.5°C</p>
+            <div class="metric-footer">
+                <span class="change-indicator change-neg">-1.2°C</span>
+                Média atual
+            </div>
+        </div>
+
+        <div class="metric-card turb">
+            <h4>Turbidez</h4>
+            <p class="metric-value">12.3 NTU</p>
+            <div class="metric-footer">
+                <span class="change-indicator change-pos">+2.1</span>
+                Acima da normal
+            </div>
+        </div>
+
+        <div class="metric-card cond">
+            <h4>Condutividade</h4>
+            <p class="metric-value">450 µS/cm</p>
+            <div class="metric-footer">
+                <span>0.0</span>
+                Dentro do padrão
+            </div>
+        </div>
+
+        <div class="metric-card do">
+            <h4>Oxigênio Dissolvido</h4>
+            <p class="metric-value">8.1 mg/L</p>
+            <div class="metric-footer">
+                <span class="change-indicator change-pos">+0.2</span>
+                Nível adequado
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div>
+            <div class="chart-placeholder">
+                <h3>pH - Últimas 24h</h3>
+                <small>Gráfico placeholder</small>
+            </div>
+            <div class="chart-placeholder">
+                <h3>Temperatura - Últimas 24h</h3>
+                <small>Gráfico placeholder</small>
+            </div>
+            <div class="chart-placeholder">
+                <h3>Múltiplos Parâmetros - Últimas 24h</h3>
+                <small>Gráfico placeholder</small>
+            </div>
+            <div class="map-placeholder" style="min-height: 250px;">
+                <h3>Mapa de Sensores</h3>
+                <small>Placeholder de Mapa</small>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="alerts">
+                <h3>Alertas Recentes <span class="new-alerts">3 novas</span></h3>
+                
+                <div class="alert-item alert-critical">
+                    <p><strong>⚠️ Turbidez Crítica</strong></p>
+                    <small>Sensor ESP32-005 detectou turbidez de 45 NTU (limite: 40 NTU)</small>
+                    <small>Lago Municipal • 2 min atrás</small>
+                </div>
+
+                <div class="alert-item alert-critical">
+                    <p><strong>⬆️ pH Elevado</strong></p>
+                    <small>Sensor ESP32-002 registrou pH de 8.2 (recomendado: 6.5-7.5)</small>
+                    <small>Reservatório Norte • 1h 05 min atrás</small>
+                </div>
+
+                <div class="alert-item alert-info">
+                    <p><strong>🔌 Sensor Reconectado</strong></p>
+                    <small>ESP32-001 voltou online após manutenção programada</small>
+                    <small>Rio Principal - Coleta 1 • 3 horas atrás</small>
+                </div>
+                <button id="view-alerts" style="width: 100%; padding: 10px; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Ver Todos os Alertas</button>
+            </div>
+
+            <div class="readings" style="margin-top: 20px;">
+                <h3>Leituras Recentes</h3>
+
+                <div class="reading-item">
+                    <h4>Rio Principal <span class="status-tag status-normal">Normal</span></h4>
+                    <small>ESP32-001 | 14:52:15</small>
+                    <div class="reading-details">
+                        pH: 7.2 | Temp: 23.5°C | Turbidez: 8.1 NTU
+                    </div>
+                </div>
+
+                <div class="reading-item">
+                    <h4>Reservatório Norte <span class="status-tag status-atencao">Atenção</span></h4>
+                    <small>ESP32-002 | 14:30:41</small>
+                    <div class="reading-details">
+                        pH: 8.2 | Temp: 24.1°C | Turbidez: 12.3 NTU
+                    </div>
+                </div>
+
+                <div class="reading-item">
+                    <h4>Rio Secundário <span class="status-tag status-normal">Normal</span></h4>
+                    <small>ESP32-003 | 14:10:20</small>
+                    <div class="reading-details">
+                        pH: 7.1 | Temp: 22.8°C | Turbidez: 5.5 NTU
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para atualizar a hora no cabeçalho
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const dateString = now.toLocaleDateString('pt-BR');
+            document.getElementById('current-time').textContent = dateString + ' ' + timeString;
+        }
+
+        // Inicializa a hora e configura a atualização a cada minuto
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Adiciona funcionalidade simples ao botão de alerta
+        document.getElementById('view-alerts').addEventListener('click', function() {
+            alert('Acessando o histórico completo de Alertas do AquaMonitor...');
+        });
+    </script>
+</body>
+</html>

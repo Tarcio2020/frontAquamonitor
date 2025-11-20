@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaMonitor | Criado por Tarcio - Monitoramento de Recursos Hídricos</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Variáveis de Cores (Paleta Foco em Água/Tecnologia) */
+        :root {
+            --dark-bg: #0d0d18;
+            --main-text: #f0f0ff;
+            --accent-color: #00bcd4; /* Ciano/Água - Vibrante */
+            --secondary-accent: #1e88e5; /* Azul Profundo */
+            --card-bg: #1a1a2e;
+            --header-bg: rgba(13, 13, 24, 0.9);
+            --border-color: #333355;
+            --shadow-color: rgba(0, 188, 212, 0.4);
+            --shadow-dark: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Estilo Base */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--main-text);
+            margin: 0;
+            line-height: 1.7;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Header Fixo */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(10px);
+            padding: 15px 5%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px var(--shadow-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-shadow: 0 0 8px rgba(0, 188, 212, 0.7);
+        }
+
+        nav a {
+            color: var(--main-text);
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: color 0.3s, border-bottom 0.3s;
+            padding-bottom: 5px;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        /* Seção Herói (Apresentação Principal) */
+        .hero {
+            padding: 180px 5% 120px;
+            text-align: center;
+            background: radial-gradient(circle at top, #1a1a2e, var(--dark-bg));
+            border-bottom: 5px solid var(--secondary-accent);
+        }
+
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px var(--shadow-color);
+        }
+        .hero h1 span {
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.4em;
+            color: var(--text-secondary);
+            max-width: 900px;
+            margin: 0 auto 40px;
+        }
+        
+        .hero .creator-tag {
+            font-size: 1.1em;
+            font-style: italic;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: var(--accent-color);
+            color: var(--dark-bg);
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background-color: #33e8ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--shadow-color);
+        }
+
+        /* Seções de Conteúdo Geral */
+        section {
+            padding: 80px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 60px;
+            color: var(--main-text);
+            text-shadow: 0 0 5px var(--accent-color);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 4px;
+            background-color: var(--accent-color);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Seção de Recursos (Cards) */
+        .features-grid {
+            display: grid;
+            /* Garante que os cards se ajustem, com mínimo de 250px */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px var(--shadow-dark);
+            border-left: 5px solid var(--secondary-accent);
+            transition: transform 0.4s, background-color 0.4s;
+        }
+
+        .feature-card:hover {
+            transform: scale(1.03);
+            background-color: #252540;
+        }
+
+        .feature-card i {
+            font-size: 3em;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px var(--shadow-color);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5em;
+            margin-top: 0;
+            color: var(--main-text);
+        }
+        
+        /* Seção Tecnologia (Visão de Código) */
+        .technology {
+            background-color: #1a1a2e;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .code-block {
+            background-color: #0d0d18;
+            padding: 25px;
+            border-radius: 10px;
+            overflow-x: auto;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 20px var(--shadow-color);
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1em;
+            color: #58d68d;
+        }
+
+        .code-line { display: block; }
+        .code-keyword { color: var(--accent-color); font-weight: bold; }
+        .code-string { color: #f5b041; }
+        .code-comment { color: #9a9a9a; font-style: italic; }
+
+        /* Rodapé de Contato */
+        footer {
+            background-color: #08080f;
+            padding: 40px 5%;
+            text-align: center;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            margin-bottom: 25px;
+        }
+
+        .contact-item {
+            font-size: 1em;
+            color: var(--main-text);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .contact-item:hover {
+            color: var(--accent-color);
+        }
+        .contact-item i {
+            margin-right: 10px;
+            color: var(--secondary-accent);
+            font-size: 1.2em;
+        }
+
+        .social-links a {
+            font-size: 1.5em;
+            color: var(--main-text);
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+        .social-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .footer-text {
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        /* ===== REGRAS DE RESPONSIVIDADE (Mobile First) ===== */
+
+        @media (max-width: 768px) {
+            /* Ajustes gerais de padding e margem */
+            section {
+                padding: 60px 5%;
+            }
+
+            /* Header e Navegação */
+            header {
+                flex-direction: column;
+                padding: 10px 5%;
+                gap: 10px;
+            }
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px 10px;
+            }
+            nav a {
+                margin: 0;
+                font-size: 0.9em;
+            }
+
+            /* Seção Herói */
+            .hero {
+                padding: 120px 5% 80px; /* Reduz o padding superior e inferior */
+            }
+            .hero h1 {
+                font-size: 2.5em; /* Reduz o tamanho da fonte */
+            }
+            .hero p {
+                font-size: 1.1em;
+            }
+            .creator-tag {
+                font-size: 0.9em;
+            }
+            .cta-button {
+                padding: 12px 30px;
+                font-size: 0.9em;
+            }
+
+            /* Títulos */
+            .section-title {
+                font-size: 2em;
+                margin-bottom: 40px;
+            }
+
+            /* Seção de Recursos (Grid) */
+            .features-grid {
+                /* Força o empilhamento em colunas únicas se a tela for muito estreita */
+                grid-template-columns: 1fr; 
+            }
+            .feature-card {
+                padding: 20px;
+            }
+
+            /* Código */
+            .code-block pre {
+                font-size: 0.8em;
+                word-wrap: break-word; /* Garante que linhas longas quebrem */
+            }
+
+            /* Rodapé */
+            .contact-info {
+                flex-direction: column; /* Empilha os itens de contato */
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">AquaMonitor</div>
+        <nav>
+            <a href="#features">Recursos</a>
+            <a href="#technology">Tecnologia</a>
+            <a href="#contact" class="cta-button" style="background-color: var(--secondary-accent); color: white; padding: 10px 20px;">Contato</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1 class="animate-on-scroll">AquaMonitor: <br> O Controle Total da Qualidade <span>Hídrica</span></h1>
+        
+        <p class="creator-tag animate-on-scroll" style="transition-delay: 0.3s;">
+            Plataforma desenvolvida por **Tarcio** - Java/Spring Boot Developer
+        </p>
+        
+        <p class="animate-on-scroll" style="transition-delay: 0.5s;">
+            AquaMonitor oferece monitoramento em tempo real de parâmetros como **pH, Turbidez e Oxigênio Dissolvido**. Solidez, precisão e um design intuitivo para a gestão dos recursos hídricos.
+        </p>
+        <a href="#contact" class="cta-button animate-on-scroll" style="transition-delay: 0.7s;">Conheça a Tecnologia</a>
+    </section>
+
+    <section id="features">
+        <h2 class="section-title animate-on-scroll">Recursos Essenciais para o Monitoramento</h2>
+        
+        <div class="features-grid">
+            
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                <i class="fas fa-water"></i>
+                <h3>Monitoramento Multi-Parâmetro</h3>
+                <p>Acompanhe pH, Temperatura, Turbidez, Condutividade e Oxigênio Dissolvido simultaneamente e em tempo real.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.3s;">
+                <i class="fas fa-bell"></i>
+                <h3>Sistema de Alertas Inteligentes</h3>
+                <p>Receba notificações imediatas (Críticas, Elevadas, Informação) quando os parâmetros saírem da faixa normalizada.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.5s;">
+                <i class="fas fa-database"></i>
+                <h3>Back-end Java/Spring Boot</h3>
+                <p>Construído por **Tarcio** com a performance e confiabilidade do Java para processar grandes volumes de dados de sensores.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.7s;">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Localização de Sensores</h3>
+                <p>Integração com mapas para visualizar a distribuição dos dispositivos de coleta e o status de cada ponto monitorado.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="technology" class="technology">
+        <h2 class="section-title animate-on-scroll">A Arquitetura Desenvolvida por Tarcio</h2>
+
+        <p style="text-align: center; max-width: 700px; margin: 0 auto 30px;" class="animate-on-scroll">
+            O coração do AquaMonitor é sua robusta API RESTful, desenvolvida em **Java 17+** e **Spring Boot**, garantindo escalabilidade e segurança.
+        </p>
+        
+        <div class="code-block animate-on-scroll">
+            <pre>
+<span class="code-line"><span class="code-keyword">@Service</span></span>
+<span class="code-line"><span class="code-keyword">public class</span> DadosService {</span>
+<span class="code-line">    <span class="code-comment">// Criado por Tarcio - Java Spring Boot Developer</span></span>
+<span class="code-line">    <span class="code-keyword">public void</span> processarLeituraSensor(Leitura leitura) {</span>
+<span class="code-line">        <span class="code-keyword">if</span> (leitura.getTurbidez() > 40) {</span>
+<span class="code-line">            alertaRepository.salvarAlerta(<span class="code-string">"Turbidez Crítica"</span>);</span>
+<span class="code-line">        }</span>
+<span class="code-line">        sensorRepository.atualizarLeitura(leitura);</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span>
+            </pre>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <h3 class="section-title" style="margin-bottom: 25px; font-size: 1.8em; text-shadow: none;">Entre em Contato com o Criador</h3>
+
+        <div class="contact-info">
+            <a href="mailto:tarcioapps7@gmail.com" class="contact-item">
+                <i class="fas fa-envelope"></i> tarcioapps7@gmail.com
+            </a>
+            <a href="tel:+5511934251292" class="contact-item">
+                <i class="fas fa-phone-alt"></i> (11) 93425-1292
+            </a>
+        </div>
+
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/tarcio-dev-java-springboot/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Tarcio2020" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+
+        <p class="footer-text">
+            &copy; 2025 AquaMonitor. Todos os direitos reservados. | Desenvolvido por **Tarcio**.
+        </p>
+    </footer>
+
+    <script>
+        // JavaScript para Animações de Scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1 
+            });
+
+            elements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Efeito de rolagem suave
+            document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
